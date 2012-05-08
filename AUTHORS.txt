@@ -1,0 +1,7 @@
+This project has been developed at the Institute of process control and robotics of Karlsruhe Institute of Technology in 2012 by:
+Richard Hertel <gagggo@web.de>
+Oier Mees <oier.mees@gmail.com>
+under supervision of:
+Stephan Irgenfried <stephan.irgenfried@kit.edu>
+Stefan Escaida <escaida@ira.uka.de>
+

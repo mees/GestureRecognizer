@@ -1,0 +1,31 @@
+<package>
+  <description brief="gesture_recognizer">
+
+     gesture_recognizer for kinect camera
+
+  </description>
+  <author>Richard Hertel/gagggo@web.de, Oier Mees/oier.mees@gmail.com</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/gesture_recognizer</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="geometry_msgs"/>
+  <depend package="openni"/>
+  <depend package="kdl"/>
+  <depend package="tf"/>
+  <depend package="pcl"/>
+  <depend package="cv_bridge"/>
+  <depend package="opencv2"/>  
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="image_transport"/>    
+  <depend package="flann"/>
+  <depend package="eigen"/>
+  <depend package="pcl_visualization"/>
+
+</package>
+
+
