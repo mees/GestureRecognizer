@@ -1,4 +1,4 @@
-The aim of this project is to implement a gesture recognition system using Kinect camera, ROS and PCL as tools.
+The aim of this project is to implement a gesture recognition system using Kinect camera and PCL as tools.
 The initial goal was to recognize at least three gestures in order to play the popular game Rock Paper Scissor
 against the computer, but with the current implementation it is trivial to add support for X more gestures.
 The recognition rate achieved depends logically on the training files, but if these are good, it should be around 0.8
