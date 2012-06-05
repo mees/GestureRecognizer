@@ -7,7 +7,7 @@ Our recognition implementation is heavily based on the PCL tutorial on cluster r
 viewpoint feature histogram (VFH) descriptors by Radu B. Rusu, which can be found under the following link 
 http://pointclouds.org/documentation/tutorials/vfh_recognition.php#vfh-recognition
 
-We also rely on Garratt Gallagher's hand detection ros package for the segmenation. See the following link
+We also rely on Garratt Gallagher's hand detection ros package for the segmentation. See the following link
 for installation http://www.ros.org/wiki/mit-ros-pkg/KinectDemos/HandDetection
 
 Used tools:
