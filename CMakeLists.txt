@@ -6,6 +6,8 @@ set(CMAKE_BUILD_TYPE RelWithDebInfo)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/gesture_recognizer/cmake/Modules/" ${CMAKE_MODULE_PATH})
+
 find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs tf)
 
 # PCL required
@@ -18,6 +20,15 @@ add_definitions(${PCL_DEFINITIONS})
 # OpenCV required
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+add_definitions(${OpenCV_DEFINITIONS})
+
+# Eigen
+find_package(Eigen3 REQUIRED)
+include_directories(${Eigen3_INCLUDE_DIRS})
+
+# HDF5
+find_package(HDF5 COMPONENTS)
 
 #find_package(Flann REQUIRED)
 #include_directories(${Flann_INCLUDE_DIRS})
@@ -116,16 +127,19 @@ catkin_package(
 ## Declare a cpp executable
 # add_executable(gesture_recognizer_node src/gesture_recognizer_node.cpp)
 
-add_executable(main src/main.cpp src/KdTreeManager.cpp src/GestureLearner.cpp src/RPSGame.cpp)
+add_executable(gesture_recognizer_node src/main.cpp src/KdTreeManager.cpp src/GestureLearner.cpp src/RPSGame.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(gesture_recognizer_node gesture_recognizer_generate_messages_cpp)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(gesture_recognizer_node
-#   ${catkin_LIBRARIES}
-# )
+# Specify libraries to link a library or executable target against
+ target_link_libraries(gesture_recognizer_node
+	 ${catkin_LIBRARIES}
+	 ${PCL_LIBRARIES}
+	 ${OpenCV_LIBS}
+	 ${HDF5_LIBRARIES}
+ )
 
 #############
 ## Install ##

@@ -75,6 +75,8 @@ flags = [
 '/usr/include',
 '-isystem',
 '/usr/local/include',
+'-isystem',
+'/usr/include/eigen3',
 ]
 
 

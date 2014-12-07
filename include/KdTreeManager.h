@@ -24,6 +24,7 @@
 
 #ifndef KDTREEMANAGER_H_
 #define KDTREEMANAGER_H_
+#include <set>
 #include <string>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
@@ -31,9 +32,11 @@
 #include <pcl/point_types.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
+#include <flann/flann.hpp>
 #include <time.h>
 #include <boost/filesystem.hpp>
 #include <flann/io/hdf5.h>
+#include <Eigen/Core>
 #include <fstream>
 
 // Important: there should not be more than one KdTreeManager with the same path at the same time,
