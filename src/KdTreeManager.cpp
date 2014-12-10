@@ -152,16 +152,14 @@ void KdTreeManager::saveHistogram(
 void KdTreeManager::calcHistogramFromCloud(
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<
 				pcl::VFHSignature308>::Ptr vfhs) {
-	pcl::PointCloud<pcl::Normal>::Ptr normals(
-			new pcl::PointCloud<pcl::Normal>());
+	pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>());
 	// Create the normal estimation class, and pass the input dataset to it
 	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
 	ne.setInputCloud(cloud);
 	// Create an empty kdtree representation, and pass it to the normal estimation object.
 	// Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree(new pcl::KdTreeFLANN<
-			pcl::PointXYZ>());
-	ne.setSearchMethod(tree);
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>());
+	ne.setSearchMethod(kdtree);
 	// Use all neighbors in a sphere of radius 3cm
 	ne.setRadiusSearch(0.03);
 	// Compute the features
@@ -171,8 +169,7 @@ void KdTreeManager::calcHistogramFromCloud(
 	vfh.setInputNormals(normals);
 	// Create an empty kdtree representation, and pass it to the FPFH estimation object.
 	// Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree2(new pcl::KdTreeFLANN<
-			pcl::PointXYZ>());
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree2(new pcl::search::KdTree<pcl::PointXYZ>());
 	vfh.setSearchMethod(tree2);
 	// Compute the features
 	vfh.compute(*vfhs);
@@ -193,12 +190,13 @@ bool KdTreeManager::loadHist(const boost::filesystem::path &path,
 	int vfh_idx;
 	// Load the file as a PCD
 	try {
-		sensor_msgs::PointCloud2 cloud;
+		pcl::PCLPointCloud2 cloud;
 		int version;
 		Eigen::Vector4f origin;
 		Eigen::Quaternionf orientation;
 		pcl::PCDReader r;
-		r.readHeader(path.string(), cloud, origin, orientation, version);
+		int type; unsigned int idx;
+		r.readHeader(path.string(), cloud, origin, orientation, version, type, idx);
 
 		vfh_idx = pcl::getFieldIndex(cloud, "vfh");
 		if (vfh_idx == -1)
@@ -214,7 +212,7 @@ bool KdTreeManager::loadHist(const boost::filesystem::path &path,
 	pcl::io::loadPCDFile(path.string(), point);
 	vfh.second.resize(308);
 
-	vector<sensor_msgs::PointField> fields;
+	vector<pcl::PCLPointField> fields;
 	pcl::getFieldIndex(point, "vfh", fields);
 
 	for (size_t i = 0; i < fields[vfh_idx].count; ++i) {
@@ -287,7 +285,6 @@ void KdTreeManager::buildTrainingDataMain() {
 			int)) tolower);
 	vector<vfh_model> models;
 
-	flann::Matrix<float> data;
 	// Load the model histograms
 	loadFeatureModels(this->path, extension, models);
 	printf("Loaded %d VFH models. Creating training data %s/%s.\n",
@@ -300,13 +297,15 @@ void KdTreeManager::buildTrainingDataMain() {
 		return;
 	}
 	// Convert data into FLANN format
-	data.rows = models.size();
-	data.cols = models[0].second.size(); // number of histogram bins
-	data.data = (float*) malloc(data.rows * data.cols * sizeof(float));
+	//data.rows = models.size();
+	//data.cols = models[0].second.size(); // number of histogram bins
+	//data.ptr() = (float*) malloc(data.rows * data.cols * sizeof(float));
+	float *rawdata = new float[models.size() * models[0].second.size()];
+	flann::Matrix<float> data(rawdata, models.size(), models[0].second.size());
 
 	for (size_t i = 0; i < data.rows; ++i)
 		for (size_t j = 0; j < data.cols; ++j)
-			data.data[i * data.cols + j] = models[i].second[j];
+			rawdata[i * data.cols + j] = models[i].second[j];
 
 	// Save data to disk (list of models)
 	save_to_file(data, training_data_h5_file_name, "training_data");
@@ -375,7 +374,7 @@ inline void KdTreeManager::nearestKSearch(flann::Index<
 	flann::Matrix<float> p = flann::Matrix<float>(
 			new float[model.second.size()], 1, model.second.size());
 
-	memcpy(&p.data[0], &model.second[0], p.cols * p.rows * sizeof(float));
+	memcpy(p.ptr(), &model.second[0], p.cols * p.rows * sizeof(float));
 
 	indices = flann::Matrix<int>(new int[k], 1, k);
 	distances = flann::Matrix<float>(new float[k], 1, k);
@@ -386,5 +385,5 @@ inline void KdTreeManager::nearestKSearch(flann::Index<
 	if (k != 0) {
 		index.knnSearch(p, indices, distances, k, flann::SearchParams(512));
 	}
-	p.free();
+	delete[] p.ptr();
 }

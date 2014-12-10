@@ -28,6 +28,8 @@
 #include <opencv/highgui.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/conversions.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <stdlib.h>
 
 #include "GestureLearner.h"
@@ -67,6 +69,7 @@ void KinectPCCallback(const sensor_msgs::PointCloud2 & PC2Msg) {
 
 	// In the Local Pointcloud our actual Handcloud will be saved
 	pcl::PointCloud<pcl::PointXYZ> LocalPointCloud;
+	
 	pcl::fromROSMsg(PC2Msg, LocalPointCloud); // The message (~= binary blob) received needs to be converted to PC.
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(LocalPointCloud.makeShared());
